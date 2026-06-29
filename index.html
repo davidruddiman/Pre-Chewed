@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pre-Chewed&#8482;</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png" />
+<meta name="theme-color" content="#0f172a" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Pre-Chewed" />
+<!-- SEO -->
+<meta name="description" content="Convert PDF, Word, PowerPoint, and Excel files to clean AI-ready text in seconds. Paste straight into Claude, ChatGPT, Gemini, Copilot, and more. Free, private, runs in your browser." />
+<style>
+  /* Reset */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  /* Design tokens - Compare the Market inspired */
+  :root {
+    --teal:         #00a3a0;
+    --teal-dark:    #007a78;
+    --teal-light:   #e6f7f7;
+    --teal-border:  #b2e5e4;
+    --navy:         #0f172a;
+    --navy-mid:     #1e3a5f;
+    --green:        #2e7d32;
+    --green-light:  #e8f5e9;
+    --green-border: #a5d6a7;
+    --green-pill:   #c8e6c9;
+    --amber:        #7c4d00;
+    --amber-light:  #fff8e1;
+    --amber-border: #ffe082;
+    --red:          #c62828;
+    --red-light:    #ffebee;
+    --red-border:   #ef9a9a;
+    --white:        #ffffff;
+    --surface:      #f7f8fa;
+    --border:       #e0e4ea;
+    --border-mid:   #d0d5dd;
+    --text-primary:   #1a2332;
+    --text-secondary: #3d4f63;
+    --text-muted:     #5e7291;
+    --text-subtle:    #4a5568;
+    --shadow-sm:  0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:  0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+    --shadow-lg:  0 8px 24px rgba(0,0,0,0.1), 0 4px 8px rgba(0,0,0,0.04);
+  }
+
+  /* Base mobile-first */
+  html { font-size: 16px; -webkit-font-smoothing: antialiased; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; color: var(--text-primary); background: var(--white); min-height: 100vh; padding: 1rem; }
+  .container { width: 100%; max-width: 680px; margin: 0 auto; }
+
+  /* App header */
+  .app-header { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%); border-radius: 16px; padding: 1.5rem 1.25rem; margin-bottom: 1.5rem; box-shadow: var(--shadow-md); }
+  .app-name { font-size: 1.375rem; font-weight: 700; color: var(--white); letter-spacing: -0.4px; line-height: 1.2; }
+  .app-name span { color: #5eead4; }
+  .app-tagline { font-size: 0.9375rem; color: #94a3b8; margin-top: 5px; line-height: 1.45; }
+
+  /* About cards */
+  .about { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+  .about-item { display: flex; gap: 0.875rem; align-items: flex-start; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.125rem; box-shadow: var(--shadow-sm); transition: box-shadow 0.15s; }
+  .about-item:hover { box-shadow: var(--shadow-md); }
+  .about-icon { font-size: 1.25rem; flex-shrink: 0; margin-top: 1px; }
+  .about-title { font-size: 0.875rem; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+  .about-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* Drop zone */
+  .drop-zone { border: 2px dashed var(--border-mid); border-radius: 16px; padding: 2.25rem 1.5rem; text-align: center; cursor: pointer; background: var(--white); margin-bottom: 1rem; position: relative; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; box-shadow: var(--shadow-sm); }
+  .drop-zone:hover, .drop-zone.drag-over { border-color: var(--teal); background: var(--teal-light); box-shadow: var(--shadow-md); }
+  .drop-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .drop-icon { font-size: 2rem; color: var(--text-muted); margin-bottom: 0.625rem; }
+  .drop-label { font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 5px; }
+  .drop-sub { font-size: 0.8125rem; color: var(--text-muted); }
+
+  /* File info */
+  .file-info { display: flex; align-items: center; gap: 0.625rem; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 0.75rem 1rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+  .file-name { font-size: 0.875rem; font-weight: 500; color: var(--text-primary); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .file-size { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; }
+  .file-clear { background: none; border: none; cursor: pointer; color: var(--text-muted); font-size: 1rem; padding: 0.5rem; min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: color 0.12s, background 0.12s; }
+  .file-clear:hover { color: var(--red); background: var(--red-light); }
+
+  /* Detection badge */
+  .detect-badge { display: flex; align-items: center; gap: 0.625rem; font-size: 0.8125rem; font-weight: 500; padding: 0.75rem 1rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid transparent; }
+  .detect-badge.is-text { background: #eef2fb; color: #2952a3; border-color: #c5d2f0; border-left: 3px solid #2952a3; }
+  .detect-badge.is-scan { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); border-left: 3px solid #f59e0b; }
+  .detect-badge.is-checking { background: #f1f5f9; color: var(--text-subtle); border-color: var(--border); }
+  .detect-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; background: var(--border-mid); }
+  .is-text .detect-dot { background: var(--teal); }
+  .is-scan .detect-dot { background: #f59e0b; }
+  .is-checking .detect-dot { animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Option cards */
+  .options-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.625rem; margin-bottom: 1rem; }
+  .option-card { background: var(--white); border: 1.5px solid #dde2ea; border-radius: 10px; padding: 0.875rem 1rem; cursor: pointer; transition: border-color 0.15s, background 0.15s, box-shadow 0.15s; box-shadow: 0 1px 4px rgba(0,0,0,0.06); min-height: 52px; position: relative; display: flex; flex-direction: column; justify-content: center; }
+  .option-card::after { content: ''; position: absolute; right: 0.875rem; top: 50%; transform: translateY(-50%); width: 20px; height: 20px; border-radius: 50%; border: 2px solid #c5cdd8; transition: all 0.15s; }
+  .option-card:hover { border-color: var(--navy-mid); box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+  .option-card.selected { background: #2952a3; border-color: #2952a3; box-shadow: 0 2px 8px rgba(41,82,163,0.25); }
+  .option-card.selected::after { background: var(--white); border-color: var(--white); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%232952a3'%3E%3Cpath fill-rule='evenodd' d='M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z' clip-rule='evenodd'/%3E%3C/svg%3E"); background-size: 14px; background-repeat: no-repeat; background-position: center; }
+  .option-card input[type="checkbox"] { display: none; }
+  .option-label { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); padding-right: 1.75rem; }
+  .option-card.selected .option-label { color: var(--white); font-weight: 600; }
+  .option-desc { font-size: 0.6875rem; color: var(--text-muted); margin-top: 3px; line-height: 1.35; padding-right: 1.75rem; }
+  .option-card.selected .option-desc { color: rgba(255,255,255,0.75); }
+
+  /* Pages input */
+  .pages-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+  .pages-row label { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); white-space: nowrap; }
+  .pages-row input[type="text"] { flex: 1; padding: 0.625rem 0.875rem; font-size: 0.875rem; border: 1.5px solid var(--border-mid); border-radius: 12px; background: var(--white); color: var(--text-primary); outline: none; min-height: 44px; transition: border-color 0.15s, box-shadow 0.15s; box-shadow: var(--shadow-sm); }
+  .pages-row input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,163,160,0.15); }
+
+  /* Primary buttons */
+  .convert-btn { width: 100%; padding: 1rem 1.5rem; font-size: 1rem; font-weight: 700; background: #3a7d44; color: var(--white); border: none; border-radius: 10px; cursor: pointer; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 56px; box-shadow: 0 2px 8px rgba(58,125,68,0.3); letter-spacing: 0.01em; }
+  .convert-btn:hover { background: #2d6235; box-shadow: 0 4px 12px rgba(58,125,68,0.4); }
+  .convert-btn:active { transform: translateY(1px); }
+  .convert-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  /* Progress */
+  .progress-wrap { margin: 1.25rem 0; }
+  .progress-label { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.5rem; display: flex; justify-content: space-between; }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--teal), #5eead4); border-radius: 3px; transition: width 0.4s ease; }
+  .progress-step { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; }
+
+  /* Result section */
+  .result-section { margin-top: 1.75rem; }
+  .token-compare { display: flex; gap: 0.75rem; margin-bottom: 1.25rem; align-items: stretch; }
+  .token-card { flex: 1; background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 1rem 1.125rem; box-shadow: var(--shadow-sm); }
+  .token-card.after { border-color: var(--green-border); background: var(--green-light); }
+  .token-card-label { font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .token-card.after .token-card-label { color: var(--green); }
+  .token-val { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .token-card.after .token-val { color: var(--green); }
+  .token-sub { font-size: 0.6875rem; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+  .savings-pill { display: inline-block; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 20px; background: var(--green-pill); color: var(--green); margin-top: 8px; }
+  .token-arrow { display: flex; align-items: center; justify-content: center; color: var(--border-mid); font-size: 1.25rem; padding: 0 0.125rem; flex-shrink: 0; align-self: center; }
+
+  .copy-big { width: 100%; padding: 1rem 1.5rem; font-size: 1rem; font-weight: 700; background: #3a7d44; color: var(--white); border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.625rem; transition: background 0.15s, box-shadow 0.15s, transform 0.1s; margin-bottom: 0.75rem; min-height: 56px; box-shadow: 0 2px 8px rgba(58,125,68,0.3); letter-spacing: 0.01em; }
+  .copy-big:hover { background: #2d6235; box-shadow: 0 4px 12px rgba(58,125,68,0.4); }
+  .copy-big:active { transform: translateY(1px); }
+  .copy-big.copied { background: #1b5e20; box-shadow: 0 2px 8px rgba(27,94,32,0.3); }
+
+  .secondary-actions { display: flex; gap: 0.625rem; margin-bottom: 1.25rem; }
+  .action-btn { flex: 1; font-size: 0.875rem; font-weight: 500; padding: 0.75rem 1rem; border: 1.5px solid var(--border-mid); border-radius: 12px; background: var(--white); cursor: pointer; color: var(--text-secondary); display: flex; align-items: center; justify-content: center; gap: 0.375rem; transition: border-color 0.12s, background 0.12s, box-shadow 0.12s; min-height: 44px; box-shadow: var(--shadow-sm); }
+  .action-btn:hover { border-color: var(--teal); background: var(--teal-light); color: var(--teal-dark); box-shadow: var(--shadow-md); }
+
+  .preview-label { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 0.5rem; }
+  .result-textarea { width: 100%; min-height: 240px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.8125rem; line-height: 1.65; padding: 1rem 1.125rem; resize: vertical; background: var(--white); border: 1.5px solid var(--border-mid); border-radius: 12px; color: var(--text-primary); outline: none; box-shadow: var(--shadow-sm); transition: border-color 0.15s, box-shadow 0.15s; }
+  .result-textarea:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(0,163,160,0.15); }
+
+  /* Error */
+  .error-box { background: var(--red-light); border: 1px solid var(--red-border); border-left: 3px solid var(--red); border-radius: 12px; padding: 0.875rem 1rem; margin-top: 1rem; font-size: 0.8125rem; color: var(--red); line-height: 1.55; }
+
+  /* Modal */
+  .modal-overlay { position: fixed; inset: 0; background: rgba(15,23,42,0.6); z-index: 1000; display: flex; align-items: flex-end; justify-content: center; padding: 0; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+  .modal-overlay.visible { opacity: 1; pointer-events: all; }
+  .modal { background: var(--white); border-radius: 20px 20px 0 0; padding: 1.75rem 1.25rem 2rem; width: 100%; box-shadow: 0 -8px 40px rgba(15,23,42,0.15); transform: translateY(24px); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+  .modal-overlay.visible .modal { transform: translateY(0); }
+  .modal::before { content: ''; display: block; width: 40px; height: 4px; background: var(--border-mid); border-radius: 2px; margin: 0 auto 1.25rem; }
+  .modal-title { font-size: 1.0625rem; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+  .modal-sub { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 1rem; line-height: 1.55; }
+  .modal-tools { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem; }
+  .modal-tool { font-size: 0.75rem; font-weight: 600; padding: 4px 12px; border-radius: 20px; border: 1.5px solid var(--teal-border); background: var(--teal-light); color: var(--teal-dark); }
+  .modal-warning { background: var(--amber-light); border: 1px solid var(--amber-border); border-left: 3px solid #f59e0b; border-radius: 12px; padding: 0.875rem 1rem; margin-bottom: 1.25rem; }
+  .modal-warning-title { font-size: 0.75rem; font-weight: 700; color: var(--amber); margin-bottom: 5px; }
+  .modal-warning-body { font-size: 0.75rem; color: #5c3d00; line-height: 1.6; }
+  .modal-actions { display: flex; gap: 0.625rem; }
+  .modal-cancel { flex: 1; padding: 0.9375rem; font-size: 0.9375rem; font-weight: 500; border: 1.5px solid var(--border-mid); border-radius: 12px; background: var(--white); color: var(--text-subtle); cursor: pointer; transition: border-color 0.12s, background 0.12s; min-height: 52px; }
+  .modal-cancel:hover { border-color: var(--text-muted); background: var(--white); }
+  .modal-confirm { flex: 2; padding: 0.9375rem; font-size: 0.9375rem; font-weight: 700; border: none; border-radius: 10px; background: #3a7d44; color: var(--white); cursor: pointer; transition: background 0.15s, box-shadow 0.15s; min-height: 52px; box-shadow: 0 2px 8px rgba(58,125,68,0.3); }
+  .modal-confirm:hover { background: #2d6235; box-shadow: 0 4px 12px rgba(58,125,68,0.4); }
+
+  /* Focus */
+  .option-card:focus-visible   { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .convert-btn:focus-visible   { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+  .copy-big:focus-visible      { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+  .action-btn:focus-visible    { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .file-clear:focus-visible    { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .modal-cancel:focus-visible  { outline: 2px solid var(--teal); outline-offset: 2px; }
+  .modal-confirm:focus-visible { outline: 2px solid var(--teal-dark); outline-offset: 2px; }
+
+  /* Odometer meter */
+  .meter-wrap { background: #0f172a; border-radius: 14px; padding: 1.125rem 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 4px 16px rgba(15,23,42,0.25); }
+  .meter-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.875rem; }
+  .meter-title { font-size: 0.6875rem; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.08em; }
+  .meter-reset { font-size: 0.6875rem; color: #475569; cursor: pointer; background: none; border: none; padding: 0; transition: color 0.12s; }
+  .meter-reset:hover { color: #94a3b8; }
+  .meter-digits { display: flex; gap: 3px; margin-bottom: 0.75rem; align-items: center; }
+  .meter-digit { background: #1e293b; border: 1px solid #2d3f55; border-radius: 6px; width: 36px; height: 48px; display: flex; align-items: center; justify-content: center; font-family: 'Courier New', 'Courier', monospace; font-size: 1.5rem; font-weight: 700; color: #5eead4; position: relative; overflow: hidden; flex-shrink: 0; }
+  .meter-digit::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 35%; background: linear-gradient(to top, rgba(0,0,0,0.35), transparent); pointer-events: none; }
+  .meter-digit.dim { color: #334155; }
+  .meter-sep { color: #334155; font-size: 1.25rem; font-weight: 700; padding: 0 1px; flex-shrink: 0; line-height: 1; }
+  .meter-footer { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .meter-sub { font-size: 0.6875rem; color: #475569; }
+  .meter-cost { font-size: 0.8125rem; font-weight: 600; color: #5eead4; }
+  .meter-stats { display: flex; gap: 0; border-top: 1px solid #1e293b; padding-top: 0.75rem; }
+  .meter-stat { flex: 1; text-align: center; }
+  .meter-stat + .meter-stat { border-left: 1px solid #1e293b; }
+  .meter-stat-val { font-size: 0.9375rem; font-weight: 600; color: #94a3b8; }
+  .meter-stat-label { font-size: 0.5625rem; color: #334155; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 3px; }
+  .meter-device-note { font-size: 0.75rem; color: #475569; text-align: center; margin-top: 0.625rem; }
+
+  /* TM superscript */
+  .app-tm { font-size: 0.55rem; vertical-align: super; color: #94a3b8; margin-left: 1px; font-weight: 400; }
+
+  /* Collapsible about cards */
+  .about-item { cursor: pointer; user-select: none; }
+  .about-item:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; border-radius: 12px; }
+  .about-content { flex: 1; min-width: 0; }
+  .about-header { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+  .about-chevron { font-size: 1rem; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .about-item[aria-expanded="true"] .about-chevron { transform: rotate(180deg); }
+  .about-body { margin-top: 0.625rem; }
+  .about-body.hidden { display: none !important; }
+
+  /* Footer */
+  .app-footer { text-align: center; padding: 1.5rem 1rem 0.5rem; font-size: 0.6875rem; color: #94a3b8; line-height: 1.6; }
+  .app-footer a { color: #94a3b8; text-decoration: none; }
+  .app-footer a:hover { color: var(--text-muted); }
+
+
+
+  /* Section heading */
+  .section-heading { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.75rem; margin-top: 1.5rem; padding-left: 0.125rem; }
+
+  /* Memory prompt */
+  .memory-prompt { margin-top: 0.75rem; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  .memory-prompt-header { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; cursor: pointer; background: var(--white); gap: 0.5rem; user-select: none; }
+  .memory-prompt-header:hover { background: var(--teal-light); }
+  .memory-prompt-label { font-size: 0.8125rem; font-weight: 600; color: var(--text-secondary); display: flex; align-items: center; gap: 0.5rem; }
+  .memory-prompt-label::before { content: '\1F9E0'; font-size: 0.875rem; }
+  .memory-prompt-chevron { font-size: 0.875rem; color: var(--text-muted); transition: transform 0.2s; flex-shrink: 0; }
+  .memory-prompt.open .memory-prompt-chevron { transform: rotate(180deg); }
+  .memory-prompt-body { display: none; padding: 0 1rem 1rem; background: var(--white); }
+  .memory-prompt.open .memory-prompt-body { display: block; }
+  .memory-prompt-hint { font-size: 0.6875rem; color: var(--text-muted); margin-bottom: 0.625rem; line-height: 1.5; }
+  .memory-prompt-text { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-size: 0.75rem; color: var(--text-secondary); line-height: 1.6; font-family: 'SF Mono', 'Fira Code', monospace; margin-bottom: 0.625rem; white-space: pre-wrap; word-break: break-word; }
+  .memory-prompt-copy { width: 100%; padding: 0.625rem; font-size: 0.8125rem; font-weight: 600; background: var(--teal); color: var(--white); border: none; border-radius: 8px; cursor: pointer; transition: background 0.15s; min-height: 40px; }
+  .memory-prompt-copy:hover { background: var(--teal-dark); }
+  .memory-prompt-copy.copied { background: var(--green); }
+
+  @media (min-width: 600px) {
+    .how-steps { flex-direction: row; gap: 0; }
+    .how-step { flex-direction: column; align-items: flex-start; padding: 0 1rem 0 0; border-bottom: none; border-right: 1px solid var(--border); flex: 1; }
+    .how-step:last-child { border-right: none; padding-right: 0; padding-left: 1rem; }
+    .how-step:not(:first-child) { padding-left: 1rem; }
+  }
+  .hidden { display: none !important; }
+
+  /* Tablet: 600px+ */
+  @media (min-width: 600px) {
+    body { padding: 1.5rem; }
+    .app-header { padding: 1.75rem 2rem; }
+    .app-name { font-size: 1.625rem; }
+    .app-tagline { font-size: 1rem; margin-top: 6px; }
+    .about { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+    .drop-zone { padding: 3rem 2rem; }
+    .drop-label { font-size: 1.0625rem; }
+    .options-row { grid-template-columns: repeat(3, 1fr); gap: 0.625rem; }
+    .token-val { font-size: 1.75rem; }
+    .result-textarea { min-height: 300px; }
+    .modal { border-radius: 20px; max-width: 520px; margin: auto; align-self: center; }
+    .modal-overlay { align-items: center; padding: 1.5rem; }
+    .modal::before { display: none; }
+  }
+
+  /* Desktop: 1024px+ */
+  @media (min-width: 1024px) {
+    body { padding: 2.5rem 2rem; }
+    .container { max-width: 720px; }
+    .app-header { padding: 2rem 2.5rem; border-radius: 20px; }
+    .app-name { font-size: 1.875rem; }
+    .app-tagline { font-size: 1.0625rem; margin-top: 8px; }
+    .about-item { padding: 1.125rem 1.375rem; }
+    .about-title { font-size: 0.9375rem; }
+    .about-desc { font-size: 0.8125rem; }
+    .drop-zone { padding: 3.5rem 2.5rem; border-radius: 20px; }
+    .drop-icon { font-size: 2.5rem; }
+    .drop-label { font-size: 1.125rem; }
+    .options-row { grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
+    .option-card { padding: 0.875rem 1rem; }
+    .option-label { font-size: 0.875rem; }
+    .option-desc { font-size: 0.75rem; }
+    .convert-btn { font-size: 1.0625rem; min-height: 56px; }
+    .copy-big { font-size: 1.0625rem; min-height: 56px; }
+    .token-val { font-size: 2rem; }
+    .token-card { padding: 1.125rem 1.375rem; }
+    .token-card-label { font-size: 0.75rem; }
+    .token-sub { font-size: 0.75rem; }
+    .result-textarea { min-height: 360px; font-size: 0.875rem; }
+    .action-btn { font-size: 0.9375rem; padding: 0.875rem 1.125rem; }
+  }
+
+  /* Large desktop: 1280px+ */
+  @media (min-width: 1280px) {
+    .container { max-width: 760px; }
+    .options-row { grid-template-columns: repeat(6, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="app-header">
+    <div>
+      <div class="app-name">Pre-Chewed<sup class="app-tm">&#8482;</sup></div>
+      <div class="app-tagline">Chew documents. Spit out clean text. Copy. Paste. Ask AI.</div>
+    </div>
+  </div>
+
+  <!-- Odometer meter -->
+  <div class="meter-wrap">
+    <div class="meter-header">
+      <div class="meter-title">Lifetime tokens saved</div>
+      <button class="meter-reset" onclick="resetMeter()" aria-label="Reset meter">Reset</button>
+    </div>
+    <div class="meter-digits" id="meterDigits">
+      <!-- Populated by JS -->
+    </div>
+    <div class="meter-footer">
+      <div class="meter-sub">on this device</div>
+      <div class="meter-cost" id="meterCost">&#8776; $0.00 saved</div>
+    </div>
+    <div class="meter-stats">
+      <div class="meter-stat">
+        <div class="meter-stat-val" id="meterSession">0</div>
+        <div class="meter-stat-label">This session</div>
+      </div>
+      <div class="meter-stat">
+        <div class="meter-stat-val" id="meterDocs">0</div>
+        <div class="meter-stat-label">Docs converted</div>
+      </div>
+      <div class="meter-stat">
+        <div class="meter-stat-val" id="meterAvg">-</div>
+        <div class="meter-stat-label">Avg saving</div>
+      </div>
+    </div>
+    <div class="meter-device-note">Saved on this device only &middot; Your other devices have their own count</div>
+  </div>
+
+  <div class="drop-zone" id="dropZone">
+    <input type="file" id="fileInput" accept=".pdf,.docx,.pptx,.xlsx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+    <div class="drop-icon">&#128196;</div>
+    <div class="drop-label">Drop a file here, or click to browse</div>
+    <div class="drop-sub">PDF &middot; Word &middot; PowerPoint &middot; Excel &middot; Runs locally &middot; Nothing uploaded</div>
+  </div>
+
+  <div class="file-info hidden" id="fileInfo">
+    <span>&#128221;</span>
+    <span class="file-name" id="fileName"></span>
+    <span class="file-size" id="fileSize"></span>
+    <button class="file-clear" onclick="clearFile()">&times;</button>
+  </div>
+
+  <div class="detect-badge is-checking hidden" id="detectBadge">
+    <span class="detect-dot"></span>
+    <span id="detectText">Analysing PDF...</span>
+  </div>
+
+  <div class="options-row hidden" id="optionsRow">
+    <label class="option-card selected" id="opt-headings">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-headings')" />
+      <div class="option-label">Headings</div>
+      <div class="option-desc">h1 / h2 / h3 hierarchy</div>
+    </label>
+    <label class="option-card selected" id="opt-bullets">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-bullets')" />
+      <div class="option-label">Bullet points</div>
+      <div class="option-desc">Lists and numbered items</div>
+    </label>
+    <label class="option-card selected" id="opt-tables">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-tables')" />
+      <div class="option-label">Tables</div>
+      <div class="option-desc">Detect and format as Markdown</div>
+    </label>
+    <label class="option-card selected" id="opt-hf">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-hf')" />
+      <div class="option-label">Strip headers/footers</div>
+      <div class="option-desc">Remove repeated page elements</div>
+    </label>
+    <label class="option-card selected" id="opt-pagenums">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-pagenums')" />
+      <div class="option-label">Page markers</div>
+      <div class="option-desc">--- Page N --- dividers</div>
+    </label>
+    <label class="option-card selected" id="opt-mergeheadings">
+      <input type="checkbox" checked onchange="toggleOpt(this,'opt-mergeheadings')" />
+      <div class="option-label">Merge heading lines</div>
+      <div class="option-desc">Collapse split title blocks</div>
+    </label>
+  </div>
+
+  <div class="pages-row hidden" id="pagesRow">
+    <label for="pageRange">Pages:</label>
+    <input type="text" id="pageRange" placeholder="e.g. 1-10, 15 - leave blank for all pages" maxlength="100" />
+  </div>
+
+  <button class="convert-btn hidden" id="convertBtn" onclick="convertPDF()">Convert to plain text &#8593;</button>
+  <!-- Floating convert button removed - inline button used instead -->
+
+
+  <div class="progress-wrap hidden" id="progressWrap">
+    <div class="progress-label">
+      <span id="progressLabel">Converting...</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    <div class="progress-step" id="progressStep">Starting...</div>
+  </div>
+
+  <div class="error-box hidden" id="errorBox"></div>
+
+  <div class="result-section hidden" id="resultSection">
+    <div class="token-compare">
+      <div class="token-card">
+        <div class="token-card-label">Before</div>
+        <div class="token-val" id="tokenBefore">-</div>
+        <div class="token-sub" id="tokenBeforeSub">est. tokens (before)</div>
+      </div>
+      <div class="token-arrow" aria-hidden="true">&#8594;</div>
+      <div class="token-card after">
+        <div class="token-card-label">After</div>
+        <div class="token-val" id="tokenAfter">-</div>
+        <div class="token-sub" id="tokenAfterSub">est. tokens</div>
+        <div class="savings-pill" id="savingsPill"></div>
+      </div>
+    </div>
+
+    <button class="copy-big" id="copyBigBtn" onclick="copyText()">
+      <span id="copyIcon">&#128203;</span>
+      <span id="copyLabel">Copy to clipboard</span>
+    </button>
+
+    <div class="secondary-actions">
+      <button class="action-btn" onclick="downloadTxt()">&#8595; Download .txt</button>
+      <button class="action-btn new-doc-btn" onclick="clearFile()">&#43; New document</button>
+    </div>
+
+
+    <div class="memory-prompt" id="memoryPrompt">
+      <div class="memory-prompt-header" onclick="toggleMemoryPrompt()" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleMemoryPrompt()">
+        <span class="memory-prompt-label">Save to AI memory &middot; never forget to pre-chew</span>
+        <span class="memory-prompt-chevron" aria-hidden="true">&#8964;</span>
+      </div>
+      <div class="memory-prompt-body">
+        <div class="memory-prompt-hint">Paste this into your AI tool's memory or custom instructions. It will remind you to run files through Pre-Chewed before every conversation - automatically.</div>
+        <div class="memory-prompt-text" id="memoryPromptText">Before I share a PDF, Word doc, PowerPoint, or spreadsheet in this conversation, remind me to first run it through Pre-Chewed (pre-chewed.app) to convert it to clean plain text. Pre-Chewed typically reduces token usage by 30–76%. Only remind me once per file, and only if the file appears large enough to matter.</div>
+        <button class="memory-prompt-copy" id="memoryPromptCopy" onclick="copyMemoryPrompt()">Copy to clipboard</button>
+      </div>
+    </div>
+    <div class="preview-label">Preview</div>
+    <textarea class="result-textarea" id="resultText" spellcheck="false" readonly></textarea>
+  </div>
+</div>
+
+  <div class="section-heading">Why Pre-Chewed?</div>
+  <div class="about">
+    <div class="about-item" onclick="toggleAbout(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleAbout(this)">
+      <div class="about-icon" aria-hidden="true">&#128176;</div>
+      <div class="about-content">
+        <div class="about-header">
+          <div class="about-title">Fewer tokens, lower cost</div>
+          <div class="about-chevron" aria-hidden="true">&#8964;</div>
+        </div>
+        <div class="about-body hidden">
+          <div class="about-desc">PDFs, Word docs, PowerPoint decks, and spreadsheets carry fonts, images, layout data, and encoding overhead that AI models process before reading a single word. Stripping it all out means less wasted context window and a sharper, faster response from Claude, ChatGPT, Gemini, Microsoft Copilot, Perplexity, and every other AI tool you use.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-item" onclick="toggleAbout(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleAbout(this)">
+      <div class="about-icon" aria-hidden="true">&#128268;</div>
+      <div class="about-content">
+        <div class="about-header">
+          <div class="about-title">Works where raw files don't</div>
+          <div class="about-chevron" aria-hidden="true">&#8964;</div>
+        </div>
+        <div class="about-body hidden">
+          <div class="about-desc">Many AI tools, automation workflows, and APIs don't accept PDFs or Office files, or handle them poorly. Plain text works everywhere. Paste it directly into Claude, ChatGPT, Gemini, Microsoft Copilot, Perplexity, Grok, Mistral, or any other prompt, tool, or pipeline.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-item" onclick="toggleAbout(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleAbout(this)">
+      <div class="about-icon" aria-hidden="true">&#128274;</div>
+      <div class="about-content">
+        <div class="about-header">
+          <div class="about-title">Private up to your clipboard</div>
+          <div class="about-chevron" aria-hidden="true">&#8964;</div>
+        </div>
+        <div class="about-body hidden">
+          <div class="about-desc">Pre-Chewed runs entirely in your browser. Your file never touches a server. No upload, no account, no cost. Once you paste the output into Claude, ChatGPT, Gemini, Microsoft Copilot, Perplexity, Grok, or any other AI tool, that platform's own privacy policy applies from that point on.</div>
+          <div class="about-desc" style="margin-top: 6px;">Pre-Chewed removes images and layout data, but the text remains subject to its original copyright. If your document contains proprietary or third-party content, it's your responsibility to ensure you have the right to share it with whichever AI tool you use.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-item" onclick="toggleAbout(this)" role="button" tabindex="0" aria-expanded="false" onkeydown="if(event.key==='Enter'||event.key===' ')toggleAbout(this)">
+      <div class="about-icon" aria-hidden="true">&#9997;&#65039;</div>
+      <div class="about-content">
+        <div class="about-header">
+          <div class="about-title">Prep once, use anywhere</div>
+          <div class="about-chevron" aria-hidden="true">&#8964;</div>
+        </div>
+        <div class="about-body hidden">
+          <div class="about-desc">Convert your PDF, Word doc, PowerPoint deck, or spreadsheet once and paste the clean output into Claude, ChatGPT, Gemini, Microsoft Copilot, Perplexity, Grok, or any other AI tool. Headings, bullet points, tables, and structure are preserved so the model understands your document the same way you do.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<div class="app-footer">
+  &copy; 2025 David Ruddiman. All rights reserved.<br>
+  Pre-Chewed&#8482; runs entirely in your browser. No data is ever uploaded or stored.
+</div>
+<div class="modal-overlay" id="ipModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Before you paste this content</div>
+    <div class="modal-sub">You are about to copy extracted text to paste into an AI tool. Please read this first.</div>
+    <div class="modal-tools">
+      <span class="modal-tool">Claude</span>
+      <span class="modal-tool">ChatGPT</span>
+      <span class="modal-tool">Gemini</span>
+      <span class="modal-tool">Microsoft Copilot</span>
+      <span class="modal-tool">Perplexity</span>
+      <span class="modal-tool">Grok</span>
+    </div>
+    <div class="modal-warning">
+      <div class="modal-warning-title">Intellectual property reminder</div>
+      <div class="modal-warning-body">
+        Pre-Chewed removes images and formatting, but the text remains subject to its original copyright. Before pasting into any AI tool, make sure you have the right to share this content.<br><br>
+        Once pasted, that platform&#39;s own privacy and data policies apply. Do not paste confidential, legally privileged, or third-party proprietary content unless you are certain your organisation&#39;s policies permit it.
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="dismissModal(false)">Cancel</button>
+      <button class="modal-confirm" onclick="dismissModal(true)">I understand, copy to clipboard</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tesseract.js/5.0.4/tesseract.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+var currentFile = null;
+var currentFileType = 'pdf';
+var detectedMode = 'text';
+var outputText = '';
+var originalTokenEst = 0;
+
+// ── Odometer meter ──────────────────────────────────────────────────────────
+var meterData = {
+  lifetime: 0,
+  docs: 0,
+  savingsPct: []
+};
+var sessionTokens = 0;
+
+function loadMeter() {
+  try {
+    var stored = localStorage.getItem('precchewed_meter');
+    if (stored) meterData = JSON.parse(stored);
+  } catch(e) {}
+  renderMeter();
+}
+
+function saveMeter() {
+  try { localStorage.setItem('precchewed_meter', JSON.stringify(meterData)); } catch(e) {}
+}
+
+function addToMeter(tokensSaved, pctSaved) {
+  meterData.lifetime += tokensSaved;
+  meterData.docs += 1;
+  if (pctSaved > 0) meterData.savingsPct.push(pctSaved);
+  sessionTokens += tokensSaved;
+  saveMeter();
+  animateMeter(meterData.lifetime - tokensSaved, meterData.lifetime);
+  renderMeterStats();
+}
+
+function resetMeter() {
+  if (!confirm('Reset your lifetime token meter? This cannot be undone.')) return;
+  meterData = { lifetime: 0, docs: 0, savingsPct: [] };
+  sessionTokens = 0;
+  saveMeter();
+  renderMeter();
+}
+
+function renderDigits(n) {
+  var s = String(Math.max(0, Math.round(n)));
+  // Pad to 7 digits
+  while (s.length < 7) s = '0' + s;
+  var container = document.getElementById('meterDigits');
+  container.innerHTML = '';
+  for (var i = 0; i < s.length; i++) {
+    if (i === 1 || i === 4) {
+      // No comma after position 0 (it's a 7-digit number: X,XXX,XXX)
+    }
+    if (i === 1) {
+      var sep = document.createElement('span');
+      sep.className = 'meter-sep';
+      sep.textContent = ',';
+      container.appendChild(sep);
+    }
+    if (i === 4) {
+      var sep2 = document.createElement('span');
+      sep2.className = 'meter-sep';
+      sep2.textContent = ',';
+      container.appendChild(sep2);
+    }
+    var cell = document.createElement('div');
+    cell.className = 'meter-digit';
+    // Dim leading zeros
+    var allZero = true;
+    for (var k = 0; k <= i; k++) { if (s[k] !== '0') { allZero = false; break; } }
+    if (allZero && i < s.length - 1) cell.classList.add('dim');
+    cell.textContent = s[i];
+    container.appendChild(cell);
+  }
+}
+
+function renderMeter() {
+  renderDigits(meterData.lifetime);
+  renderMeterStats();
+}
+
+function renderMeterStats() {
+  // Cost estimate at Claude Sonnet pricing $3 per million tokens
+  var cost = (meterData.lifetime / 1000000) * 3;
+  document.getElementById('meterCost').textContent = '\u2248 $' + cost.toFixed(2) + ' saved';
+  document.getElementById('meterSession').textContent = sessionTokens > 0 ? formatShort(sessionTokens) : '0';
+  document.getElementById('meterDocs').textContent = meterData.docs;
+  var avg = meterData.savingsPct.length > 0
+    ? Math.round(meterData.savingsPct.reduce(function(a,b){return a+b;},0) / meterData.savingsPct.length)
+    : null;
+  document.getElementById('meterAvg').textContent = avg !== null ? avg + '%' : '-';
+}
+
+function formatShort(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n/1000).toFixed(1) + 'k';
+  return String(n);
+}
+
+function animateMeter(from, to) {
+  var duration = 1200;
+  var start = null;
+  function step(timestamp) {
+    if (!start) start = timestamp;
+    var progress = Math.min((timestamp - start) / duration, 1);
+    // Ease out cubic
+    var eased = 1 - Math.pow(1 - progress, 3);
+    renderDigits(from + (to - from) * eased);
+    if (progress < 1) requestAnimationFrame(step);
+    else { renderDigits(to); renderMeterStats(); }
+  }
+  requestAnimationFrame(step);
+}
+
+loadMeter();
+
+var pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+
+function toggleMemoryPrompt() {
+  var el = document.getElementById('memoryPrompt');
+  var header = el.querySelector('.memory-prompt-header');
+  el.classList.toggle('open');
+  header.setAttribute('aria-expanded', el.classList.contains('open'));
+}
+
+function copyMemoryPrompt() {
+  var text = document.getElementById('memoryPromptText').textContent;
+  var btn = document.getElementById('memoryPromptCopy');
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).catch(function() { fallbackCopy(text); });
+    } else { fallbackCopy(text); }
+  } catch(e) { fallbackCopy(text); }
+  btn.textContent = 'Copied!';
+  btn.classList.add('copied');
+  setTimeout(function() {
+    btn.textContent = 'Copy to clipboard';
+    btn.classList.remove('copied');
+  }, 2500);
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+  document.body.appendChild(ta);
+  ta.focus(); ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+}
+
+function toggleAbout(el) {
+  var body = el.querySelector('.about-body');
+  var expanded = el.getAttribute('aria-expanded') === 'true';
+  body.classList.toggle('hidden', expanded);
+  el.setAttribute('aria-expanded', !expanded);
+}
+
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+var dropZone = document.getElementById('dropZone');
+var fileInput = document.getElementById('fileInput');
+
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('drag-over'); });
+dropZone.addEventListener('drop', function(e) {
+  e.preventDefault(); dropZone.classList.remove('drag-over');
+  var f = e.dataTransfer.files[0];
+  if (f) validateAndLoad(f);
+});
+fileInput.addEventListener('change', function(e) {
+  if (e.target.files[0]) validateAndLoad(e.target.files[0]);
+});
+
+var MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+
+function validateAndLoad(f) {
+  // Extension check
+  if (!f.name.toLowerCase().endsWith('.pdf')) {
+    showValidationError('Only .pdf files are accepted.'); return;
+  }
+  // MIME check (not spoofable via the file picker, but belt-and-suspenders)
+  if (f.type && f.type !== 'application/pdf' && f.type !== '') {
+    showValidationError('Only PDF files are accepted.'); return;
+  }
+  // Size check
+  if (f.size === 0) {
+    showValidationError('This file appears to be empty.'); return;
+  }
+  if (f.size > MAX_FILE_SIZE) {
+    showValidationError('File is too large. Maximum size is 100MB.'); return;
+  }
+  setFile(f);
+}
+
+function showValidationError(msg) {
+  var el = document.getElementById('errorBox');
+  el.textContent = msg;
+  show('errorBox');
+}
+
+async function setFile(f) {
+  var name = f.name.toLowerCase();
+  var isDocx = name.endsWith('.docx') || f.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+  var isPptx = name.endsWith('.pptx') || f.type === 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+  var isXlsx = name.endsWith('.xlsx') || f.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+  var isPdf  = !isDocx && !isPptx && !isXlsx;
+
+  // Validate file type
+  if (!isPdf && !isDocx && !isPptx && !isXlsx) {
+    showValidationError('Please upload a PDF, Word (.docx), PowerPoint (.pptx), or Excel (.xlsx) file.'); return;
+  }
+
+  // For PDFs, verify magic bytes
+  if (isPdf) {
+    try {
+      var headerBuf = await f.slice(0, 5).arrayBuffer();
+      var header = new Uint8Array(headerBuf);
+      var magic = String.fromCharCode(header[0], header[1], header[2], header[3], header[4]);
+      if (magic !== '%PDF-') {
+        showValidationError('This file does not appear to be a valid PDF.'); return;
+      }
+    } catch(e) {
+      showValidationError('Could not read the file.'); return;
+    }
+  }
+
+  currentFile = f;
+  currentFileType = isDocx ? 'docx' : isPptx ? 'pptx' : isXlsx ? 'xlsx' : 'pdf';
+  document.getElementById('fileName').textContent = f.name;
+  document.getElementById('fileSize').textContent = formatSize(f.size);
+  hide('dropZone'); show('fileInfo');
+  hide('resultSection'); hide('errorBox'); hide('progressWrap');
+  hide('optionsRow'); hide('pagesRow'); hide('convertBtn');
+
+  var badge = document.getElementById('detectBadge');
+  badge.className = 'detect-badge is-checking';
+  show('detectBadge');
+
+  if (isDocx || isPptx || isXlsx) {
+    detectedMode = currentFileType;
+    badge.className = 'detect-badge is-text';
+    var labels = { docx: 'Word document', pptx: 'PowerPoint presentation', xlsx: 'Excel spreadsheet' };
+    document.getElementById('detectText').textContent = (labels[currentFileType] || 'Document') + ' detected. Ready to convert.';
+    // Hide page range for non-PDF types
+    hide('pagesRow');
+    show('optionsRow'); show('convertBtn');
+  } else {
+    document.getElementById('detectText').textContent = 'Analysing PDF...';
+    try {
+      var ab = await f.arrayBuffer();
+      var pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+      var sample = Math.min(pdf.numPages, 3);
+      var totalChars = 0;
+      for (var p = 1; p <= sample; p++) {
+        var page = await pdf.getPage(p);
+        var ct = await page.getTextContent();
+        for (var i = 0; i < ct.items.length; i++) {
+          if (ct.items[i].str) totalChars += ct.items[i].str.trim().length;
+        }
+      }
+      detectedMode = (totalChars / sample) < 50 ? 'ocr' : 'text';
+    } catch(e) {
+      detectedMode = 'text';
+    }
+
+    if (detectedMode === 'ocr') {
+      badge.className = 'detect-badge is-scan';
+      document.getElementById('detectText').textContent = 'Scanned PDF detected. Tesseract OCR will run locally.';
+    } else {
+      badge.className = 'detect-badge is-text';
+      document.getElementById('detectText').textContent = 'Text-based PDF detected. Ready to convert.';
+    }
+    show('optionsRow'); show('convertBtn'); show('pagesRow');
+  }
+
+  // Show floating button
+}
+
+function clearFile() {
+  currentFile = null;
+  currentFileType = 'pdf';
+  outputText = '';
+  ipWarningAcknowledged = false;
+  copyInProgress = false;
+  fileInput.value = '';
+  show('dropZone');
+  ['fileInfo','detectBadge','optionsRow','pagesRow','convertBtn','resultSection','errorBox','progressWrap'].forEach(hide);
+  // Clear the preview textarea to free memory
+  document.getElementById('resultText').value = '';
+}
+
+function toggleOpt(el, id) { document.getElementById(id).classList.toggle('selected', el.checked); }
+
+function getOpts() {
+  return {
+    headings: document.getElementById('opt-headings').querySelector('input').checked,
+    bullets: document.getElementById('opt-bullets').querySelector('input').checked,
+    tables: document.getElementById('opt-tables').querySelector('input').checked,
+    stripHF: document.getElementById('opt-hf').querySelector('input').checked,
+    pagenums: document.getElementById('opt-pagenums').querySelector('input').checked,
+    mergeHeadings: document.getElementById('opt-mergeheadings').querySelector('input').checked
+  };
+}
+
+function parsePageRange(str, total) {
+  if (!str.trim()) return null;
+  var pages = new Set();
+  str.split(',').slice(0, 50).forEach(function(part) { // max 50 segments
+    part = part.trim();
+    if (part.indexOf('-') > 0) {
+      var parts = part.split('-');
+      var a = Math.max(1, parseInt(parts[0]));
+      var b = Math.min(total, parseInt(parts[1]));
+      if (!isNaN(a) && !isNaN(b) && b >= a) {
+        for (var i = a; i <= b; i++) pages.add(i);
+      }
+    } else {
+      var n = parseInt(part);
+      if (!isNaN(n) && n >= 1 && n <= total) pages.add(n);
+    }
+  });
+  return pages.size ? Array.from(pages).sort(function(a,b){return a-b;}) : null;
+}
+
+function setProgress(pct, step, label) {
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = Math.round(pct) + '%';
+  document.getElementById('progressStep').textContent = step;
+  if (label) document.getElementById('progressLabel').textContent = label;
+}
+
+
+function getSavingsPill(saved, fileType) {
+  // For text-based PDFs: before ≈ after because AI extracts the same text layer.
+  // Value is compatibility and reliable structure, not token reduction.
+  if (fileType === 'pdf-text' && saved < 5) {
+    return 'Compatible with all tools';
+  }
+  // For scanned PDFs: genuine dramatic saving via vision vs OCR
+  if (fileType === 'pdf-scan' && saved > 0) {
+    return '~' + saved + '% fewer tokens';
+  }
+  // For DOCX: moderate saving from XML/style overhead removal
+  if (fileType === 'docx' && saved >= 5) {
+    return '~' + saved + '% fewer tokens';
+  }
+  if (fileType === 'docx' && saved < 5) {
+    return 'Structure preserved';
+  }
+  // For PPTX: significant saving - slides processed as images when uploaded raw
+  if (fileType === 'pptx' && saved > 0) {
+    return '~' + saved + '% fewer tokens';
+  }
+  // For XLSX: moderate saving from XML verbosity
+  if (fileType === 'xlsx' && saved >= 5) {
+    return '~' + saved + '% fewer tokens';
+  }
+  if (fileType === 'xlsx' && saved < 5) {
+    return 'Data extracted';
+  }
+  // Fallback
+  return saved > 0 ? '~' + saved + '% fewer tokens' : 'Converted';
+}
+
+function formatSize(b) {
+  if (b < 1024) return b + ' B';
+  if (b < 1048576) return (b/1024).toFixed(1) + ' KB';
+  return (b/1048576).toFixed(1) + ' MB';
+}
+
+
+async function convertDocx() {
+  show('progressWrap'); hide('resultSection'); hide('errorBox');
+  document.getElementById('convertBtn').disabled = true;
+  setProgress(10, 'Reading Word document...', 'Converting...');
+
+  try {
+    var arrayBuffer = await currentFile.arrayBuffer();
+    setProgress(35, 'Extracting text and structure...', 'Converting...');
+
+    var result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+    var rawText = result.value || '';
+
+    setProgress(65, 'Applying formatting options...', 'Converting...');
+
+    var opts = getOpts();
+    var lines = rawText.split('\n');
+    var out = [];
+
+    lines.forEach(function(line) {
+      var trimmed = line.trim();
+      if (!trimmed) { out.push(''); return; }
+      out.push(trimmed);
+    });
+
+    // Collapse multiple blank lines
+    var collapsed = [];
+    var blanks = 0;
+    out.forEach(function(l) {
+      if (l === '') { blanks++; if (blanks <= 1) collapsed.push(''); }
+      else { blanks = 0; collapsed.push(l); }
+    });
+
+    outputText = collapsed.join('\n').trim();
+
+    setProgress(90, 'Calculating token estimates...', 'Converting...');
+
+    // Token estimates for DOCX:
+    // DOCX is a ZIP of XML files: word/document.xml (content), styles.xml,
+    // numbering.xml, theme data, relationship files. The AI parses all of this.
+    // File size / 8 accounts for the ZIP compression and XML overhead.
+    var afterTokens = Math.round(outputText.length / 4);
+    var beforeTokens = Math.max(Math.round(currentFile.size / 8), afterTokens);
+    var saved = beforeTokens > afterTokens ? Math.round((1 - afterTokens / beforeTokens) * 100) : 0;
+
+    document.getElementById('tokenBeforeSub').textContent = 'est. tokens (raw .docx)';
+    document.getElementById('tokenBefore').textContent = beforeTokens.toLocaleString();
+    document.getElementById('tokenAfter').textContent = afterTokens.toLocaleString();
+    document.getElementById('tokenAfterSub').textContent = 'est. tokens (plain text)';
+    document.getElementById('savingsPill').textContent = getSavingsPill(saved, 'docx');
+    document.getElementById('resultText').value = outputText;
+
+    var tokensSaved = Math.max(0, beforeTokens - afterTokens);
+    if (tokensSaved > 0) addToMeter(tokensSaved, saved);
+
+    setProgress(100, 'Done!', 'Converting...');
+    hide('progressWrap');
+    show('resultSection');
+
+  } catch(e) {
+    hide('progressWrap');
+    showValidationError('Could not convert this Word document. Make sure it is a valid .docx file. Error: ' + e.message);
+  } finally {
+      document.getElementById('convertBtn').disabled = false;
+  }
+}
+
+
+async function convertPptx() {
+  show('progressWrap'); hide('resultSection'); hide('errorBox');
+  document.getElementById('convertBtn').disabled = true;
+  setProgress(10, 'Reading PowerPoint file...', 'Converting...');
+
+  try {
+    var arrayBuffer = await currentFile.arrayBuffer();
+    var zip = await JSZip.loadAsync(arrayBuffer);
+    setProgress(30, 'Extracting slides...', 'Converting...');
+
+    // Find all slide XML files in order
+    var slideFiles = [];
+    zip.forEach(function(path, file) {
+      if (path.match(/^ppt\/slides\/slide[0-9]+\.xml$/)) {
+        slideFiles.push({ path: path, file: file });
+      }
+    });
+
+    // Sort slides numerically
+    slideFiles.sort(function(a, b) {
+      var na = parseInt(a.path.match(/slide([0-9]+)/)[1]);
+      var nb = parseInt(b.path.match(/slide([0-9]+)/)[1]);
+      return na - nb;
+    });
+
+    setProgress(50, 'Parsing slide content...', 'Converting...');
+
+    var slides = [];
+    for (var i = 0; i < slideFiles.length; i++) {
+      var xmlStr = await slideFiles[i].file.async('string');
+      // Parse XML
+      var parser = new DOMParser();
+      var doc = parser.parseFromString(xmlStr, 'text/xml');
+
+      // Extract all text runs in order
+      var texts = [];
+      var nodes = doc.querySelectorAll('t');
+      nodes.forEach(function(node) {
+        var t = node.textContent.trim();
+        if (t) texts.push(t);
+      });
+
+      if (texts.length > 0) {
+        var slideNum = i + 1;
+        // First text element is usually the title
+        var title = texts[0];
+        var body = texts.slice(1).join(' ').trim();
+        slides.push({ num: slideNum, title: title, body: body });
+      }
+
+      setProgress(50 + Math.round((i / slideFiles.length) * 35), 'Parsing slide ' + (i+1) + ' of ' + slideFiles.length + '...', 'Converting...');
+    }
+
+    setProgress(88, 'Building output...', 'Converting...');
+
+    var out = [];
+    slides.forEach(function(slide) {
+      out.push('--- Slide ' + slide.num + ' ---');
+      if (slide.title) out.push('# ' + slide.title);
+      if (slide.body) out.push(slide.body);
+      out.push('');
+    });
+
+    outputText = out.join('\n').trim();
+
+    setProgress(95, 'Calculating token estimates...', 'Converting...');
+
+    // Token estimates for PPTX:
+    // When uploaded raw, most AI tools render each slide visually (as an image),
+    // similar to scanned PDFs. Conservative estimate: 800 tokens per slide
+    // for the visual rendering cost, which is lower than a full-page scan
+    // because slides typically have less content density than document pages.
+    // We use the higher of slide-count or file-size estimates for honesty.
+    var afterTokens = Math.round(outputText.length / 4);
+    var bySlides = slides.length * 800;
+    var byFileSize = Math.round(currentFile.size / 10);
+    var beforeTokens = Math.max(bySlides, byFileSize, afterTokens);
+    var saved = beforeTokens > afterTokens ? Math.round((1 - afterTokens / beforeTokens) * 100) : 0;
+
+    document.getElementById('tokenBeforeSub').textContent = 'est. tokens (raw .pptx, ' + slides.length + ' slides)';
+    document.getElementById('tokenBefore').textContent = beforeTokens.toLocaleString();
+    document.getElementById('tokenAfter').textContent = afterTokens.toLocaleString();
+    document.getElementById('tokenAfterSub').textContent = 'est. tokens (plain text)';
+    document.getElementById('savingsPill').textContent = getSavingsPill(saved, 'pptx');
+    document.getElementById('resultText').value = outputText;
+
+    var tokensSaved = Math.max(0, beforeTokens - afterTokens);
+    if (tokensSaved > 0) addToMeter(tokensSaved, saved);
+
+    setProgress(100, 'Done!', 'Converting...');
+    hide('progressWrap');
+    show('resultSection');
+
+  } catch(e) {
+    hide('progressWrap');
+    showValidationError('Could not convert this PowerPoint file. Make sure it is a valid .pptx file. Error: ' + e.message);
+  } finally {
+      document.getElementById('convertBtn').disabled = false;
+  }
+}
+
+
+async function convertXlsx() {
+  show('progressWrap'); hide('resultSection'); hide('errorBox');
+  document.getElementById('convertBtn').disabled = true;
+  setProgress(10, 'Reading Excel file...', 'Converting...');
+
+  try {
+    var arrayBuffer = await currentFile.arrayBuffer();
+    setProgress(35, 'Parsing workbook...', 'Converting...');
+
+    var workbook = XLSX.read(arrayBuffer, { type: 'array' });
+    var sheetNames = workbook.SheetNames;
+
+    setProgress(60, 'Extracting sheets...', 'Converting...');
+
+    var out = [];
+    sheetNames.forEach(function(name, idx) {
+      var sheet = workbook.Sheets[name];
+
+      // Get sheet range
+      var range = sheet['!ref'];
+      if (!range) return; // empty sheet
+
+      // Convert to array of arrays (rows x cols)
+      var rows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: '' });
+
+      // Filter out completely empty rows
+      rows = rows.filter(function(row) {
+        return row.some(function(cell) { return String(cell).trim() !== ''; });
+      });
+
+      if (rows.length === 0) return;
+
+      // Sheet heading
+      if (sheetNames.length > 1) {
+        out.push('## Sheet: ' + name);
+        out.push('');
+      }
+
+      // Build Markdown table if rows have consistent column counts
+      var maxCols = rows.reduce(function(m, r) { return Math.max(m, r.length); }, 0);
+
+      if (maxCols > 0 && rows.length > 0) {
+        // Header row
+        var header = rows[0].map(function(c) { return String(c).replace(/\|/g, '\\|').trim() || ' '; });
+        out.push('| ' + header.join(' | ') + ' |');
+        out.push('| ' + header.map(function() { return '---'; }).join(' | ') + ' |');
+
+        // Data rows
+        rows.slice(1).forEach(function(row) {
+          // Pad row to maxCols
+          while (row.length < maxCols) row.push('');
+          var cells = row.map(function(c) { return String(c).replace(/\|/g, '\\|').trim() || ' '; });
+          out.push('| ' + cells.join(' | ') + ' |');
+        });
+      }
+
+      out.push('');
+      setProgress(60 + Math.round(((idx+1) / sheetNames.length) * 30), 'Processing sheet ' + (idx+1) + ' of ' + sheetNames.length + '...', 'Converting...');
+    });
+
+    outputText = out.join('\n').trim();
+
+    setProgress(95, 'Calculating token estimates...', 'Converting...');
+
+    // Token estimates for XLSX:
+    // XLSX is a ZIP of XML files: shared strings table (all cell text stored
+    // separately and referenced by index), styles, worksheets with verbose cell
+    // references like <c r="A1"><v>42</v></c>. The shared strings table alone
+    // can be 3-5x larger than the actual cell values.
+    // File size / 6 accounts for ZIP compression vs XML verbosity ratio.
+    var afterTokens = Math.round(outputText.length / 4);
+    var beforeTokens = Math.max(Math.round(currentFile.size / 6), afterTokens);
+    var saved = beforeTokens > afterTokens ? Math.round((1 - afterTokens / beforeTokens) * 100) : 0;
+
+    document.getElementById('tokenBeforeSub').textContent = 'est. tokens (raw .xlsx)';
+    document.getElementById('tokenBefore').textContent = beforeTokens.toLocaleString();
+    document.getElementById('tokenAfter').textContent = afterTokens.toLocaleString();
+    document.getElementById('tokenAfterSub').textContent = 'est. tokens (plain text)';
+    document.getElementById('savingsPill').textContent = getSavingsPill(saved, 'xlsx');
+    document.getElementById('resultText').value = outputText;
+
+    var tokensSaved = Math.max(0, beforeTokens - afterTokens);
+    if (tokensSaved > 0) addToMeter(tokensSaved, saved);
+
+    setProgress(100, 'Done!', 'Converting...');
+    hide('progressWrap');
+    show('resultSection');
+
+  } catch(e) {
+    hide('progressWrap');
+    showValidationError('Could not convert this Excel file. Make sure it is a valid .xlsx file. Error: ' + e.message);
+  } finally {
+      document.getElementById('convertBtn').disabled = false;
+  }
+}
+
+async function convertPDF() {
+  if (!currentFile) return;
+  if (currentFileType === 'docx') { await convertDocx(); return; }
+  if (currentFileType === 'pptx') { await convertPptx(); return; }
+  if (currentFileType === 'xlsx') { await convertXlsx(); return; }
+  hide('resultSection'); hide('errorBox'); show('progressWrap');
+  document.getElementById('convertBtn').disabled = true;
+  setProgress(3, 'Reading PDF...', detectedMode === 'ocr' ? 'Running OCR...' : 'Converting...');
+
+  try {
+    var ab = await currentFile.arrayBuffer();
+    var pdf = await pdfjsLib.getDocument({ data: ab }).promise;
+    var totalPages = pdf.numPages;
+    var pageNums = parsePageRange(document.getElementById('pageRange').value, totalPages) ||
+      Array.from({length: totalPages}, function(_,i){ return i+1; });
+
+    // Estimate before tokens
+    // For scanned PDFs: each page is processed as an image by AI vision models.
+    // Claude and ChatGPT both charge ~1,600 tokens per page for vision processing.
+    // For text-based PDFs: extract raw text and divide by 4 (standard token estimate).
+    var rawText = '';
+    try {
+      for (var p = 1; p <= totalPages; p++) {
+        var pg = await pdf.getPage(p);
+        var ct = await pg.getTextContent();
+        rawText += ct.items.map(function(i){ return i.str; }).join(' ');
+      }
+      if (detectedMode === 'ocr') {
+        // Vision token cost: ~1,600 tokens per page (Claude/ChatGPT standard)
+        originalTokenEst = pageNums.length * 1600;
+      } else {
+        // For text-based PDFs: the AI extracts the text layer internally when
+        // you upload the file - so the effective token cost is the extracted
+        // text itself. The before estimate is raw text / 4, same as the output.
+        // Value of Pre-Chewed here is compatibility and reliable structure,
+        // not token reduction. A fallback uses file size / 50 if no text found.
+        var byRawText = rawText.trim().length > 100 ? Math.round(rawText.length / 4) : 0;
+        originalTokenEst = byRawText > 0 ? byRawText : Math.round(currentFile.size / 50); // file size fallback
+      }
+    } catch(e) {
+      originalTokenEst = detectedMode === 'ocr'
+        ? pageNums.length * 1600
+        : Math.round(currentFile.size / 50); // file size fallback
+    }
+
+    var result = detectedMode === 'text'
+      ? await extractTextMode(pdf, pageNums, totalPages)
+      : await extractOCRMode(pdf, pageNums, totalPages);
+
+    outputText = result;
+    var afterTokens = Math.round(result.length / 4);
+    // Before should never be less than after
+    if (originalTokenEst < afterTokens) originalTokenEst = afterTokens;
+    var saved = originalTokenEst > afterTokens ? Math.round((1 - afterTokens/originalTokenEst)*100) : 0;
+
+    // Label the before card differently for scanned vs text PDFs
+    document.getElementById('tokenBeforeSub').textContent = detectedMode === 'ocr'
+      ? 'est. tokens (vision, per page)'
+      : 'est. tokens (raw PDF)';
+
+    document.getElementById('tokenBefore').textContent = originalTokenEst.toLocaleString();
+    document.getElementById('tokenAfter').textContent = afterTokens.toLocaleString();
+    document.getElementById('tokenAfterSub').textContent = 'est. tokens (plain text)';
+    var pdfType = detectedMode === 'ocr' ? 'pdf-scan' : 'pdf-text';
+    document.getElementById('savingsPill').textContent = getSavingsPill(saved, pdfType);
+    document.getElementById('resultText').value = result;
+
+    // Update the lifetime meter
+    var tokensSaved = Math.max(0, originalTokenEst - afterTokens);
+    if (tokensSaved > 0) addToMeter(tokensSaved, saved);
+
+    var btn = document.getElementById('copyBigBtn');
+    btn.classList.remove('copied');
+    document.getElementById('copyIcon').textContent = '\uD83D\uDCCB';
+    document.getElementById('copyLabel').textContent = 'Copy to clipboard';
+
+    hide('progressWrap'); show('resultSection');
+    document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch(err) {
+    hide('progressWrap');
+    var el = document.getElementById('errorBox');
+    el.textContent = 'Something went wrong: ' + err.message + (detectedMode === 'ocr' ? ' If the issue persists, try a different PDF.' : '');
+    show('errorBox');
+    console.error(err);
+  }
+
+  document.getElementById('convertBtn').disabled = false;
+}
+
+async function extractTextMode(pdf, pageNums, totalPages) {
+  var opts = getOpts();
+  var all = [];
+
+  for (var idx = 0; idx < pageNums.length; idx++) {
+    var pn = pageNums[idx];
+    setProgress(5 + (idx/pageNums.length)*55, 'Extracting page ' + pn + ' of ' + totalPages + '...');
+    var page = await pdf.getPage(pn);
+    var content = await page.getTextContent();
+    var vp = page.getViewport({ scale: 1 });
+    var pH = vp.height;
+    var items = content.items.filter(function(i){ return i.str && i.str.trim(); }).map(function(i){
+      return {
+        str: i.str,
+        x: Math.round(i.transform[4]),
+        y: Math.round(pH - i.transform[5]),
+        fs: Math.abs(Math.round(i.transform[0])),
+        bold: i.fontName && (i.fontName.toLowerCase().indexOf('bold') >= 0),
+        pageNum: pn,
+        pageH: pH
+      };
+    });
+    all.push({ pageNum: pn, items: items, pageH: pH });
+  }
+
+  setProgress(62, 'Analysing structure...');
+
+  // Font size baseline
+  var fss = [];
+  all.forEach(function(p){ p.items.forEach(function(i){ if(i.fs > 4 && i.fs < 200) fss.push(i.fs); }); });
+  fss.sort(function(a,b){ return a-b; });
+  var body = fss[Math.floor(fss.length * 0.5)] || 12;
+  var h1T = body * 1.6, h2T = body * 1.3, h3T = body * 1.1;
+
+  // ── Header/footer detection ─────────────────────────────────────────────
+  // Find text that appears at the same y-position (top 8% or bottom 8%) on 3+ pages
+  var hfTexts = new Set();
+  if (opts.stripHF && all.length >= 3) {
+    // Collect (normalised-y-band, text) pairs per page
+    var bandMap = {};
+    all.forEach(function(pg) {
+      var pH = pg.pageH;
+      groupByLine(pg.items).forEach(function(li) {
+        var text = li.map(function(i){ return i.str; }).join(' ').replace(/\s+/g,' ').trim();
+        if (!text) return;
+        var yRel = li[0].y / pH;
+        // Top 8% or bottom 8% of page
+        if (yRel < 0.08 || yRel > 0.92) {
+          var key = text.toLowerCase().replace(/\d+/g,'#'); // normalise page numbers
+          bandMap[key] = (bandMap[key] || 0) + 1;
+        }
+      });
+    });
+    // If text appears on 3+ pages, flag as header/footer
+    Object.keys(bandMap).forEach(function(k) {
+      if (bandMap[k] >= 3) hfTexts.add(k);
+    });
+  }
+
+  function isHF(text) {
+    if (!opts.stripHF || hfTexts.size === 0) return false;
+    var norm = text.toLowerCase().replace(/\d+/g,'#');
+    return hfTexts.has(norm);
+  }
+
+  // ── Table detection ─────────────────────────────────────────────────────
+  // A table is a group of lines where items cluster into 2+ consistent x-columns
+  function detectTable(lines) {
+    if (!opts.tables || lines.length < 2) return null;
+    // Collect all x positions across lines
+    var xPositions = [];
+    lines.forEach(function(li) { li.forEach(function(item){ xPositions.push(item.x); }); });
+    if (xPositions.length < 4) return null;
+
+    // Cluster x positions into columns using a simple gap-based approach
+    xPositions.sort(function(a,b){ return a-b; });
+    var cols = [xPositions[0]];
+    for (var i = 1; i < xPositions.length; i++) {
+      if (xPositions[i] - xPositions[i-1] > 30) { // 30pt gap = new column
+        cols.push(xPositions[i]);
+      }
+    }
+    if (cols.length < 2) return null; // not a table, only one column
+
+    // Assign each line's items to columns and build rows
+    var rows = lines.map(function(li) {
+      var row = new Array(cols.length).fill('');
+      li.forEach(function(item) {
+        // Find nearest column
+        var best = 0;
+        var bestDist = Math.abs(item.x - cols[0]);
+        for (var c = 1; c < cols.length; c++) {
+          var d = Math.abs(item.x - cols[c]);
+          if (d < bestDist) { bestDist = d; best = c; }
+        }
+        row[best] = (row[best] ? row[best] + ' ' : '') + item.str.trim();
+      });
+      return row;
+    });
+
+    // A valid table: at least 2 rows have 2+ non-empty cells
+    var validRows = rows.filter(function(r){ return r.filter(Boolean).length >= 2; });
+    if (validRows.length < 2) return null;
+
+    return rows;
+  }
+
+  setProgress(75, 'Formatting output...');
+
+  // ── First pass: group items into lines, detect tables ───────────────────
+  var tokens = [];
+
+  all.forEach(function(pg) {
+    if (opts.pagenums && all.length > 1) {
+      tokens.push({ type: 'pagemarker', text: '--- Page ' + pg.pageNum + ' ---' });
+    }
+
+    var lines = groupByLine(pg.items);
+
+    // Sliding window table detection: look for runs of 2+ lines that form a table
+    var i = 0;
+    while (i < lines.length) {
+      // Try to detect a table starting at line i
+      if (opts.tables && i + 1 < lines.length) {
+        var tableEnd = i + 1;
+        while (tableEnd < lines.length && tableEnd - i <= 50) {
+          var candidate = lines.slice(i, tableEnd + 1);
+          var table = detectTable(candidate);
+          if (table) {
+            tableEnd++;
+          } else {
+            break;
+          }
+        }
+        var finalTable = tableEnd > i + 1 ? detectTable(lines.slice(i, tableEnd)) : null;
+        if (finalTable && finalTable.length >= 2) {
+          tokens.push({ type: 'table', rows: finalTable });
+          i = tableEnd;
+          continue;
+        }
+      }
+
+      // Not a table: classify normally
+      var li = lines[i];
+      var avgFs = li.reduce(function(s,item){ return s+item.fs; }, 0) / li.length;
+      var text = li.map(function(item){ return item.str; }).join(' ').replace(/\s+/g,' ').trim();
+      if (!text || isHF(text)) { i++; continue; }
+
+      var isBold = li.some(function(item){ return item.bold; });
+      var type = 'body';
+      if (opts.headings) {
+        if (avgFs >= h1T) type = 'h1';
+        else if (avgFs >= h2T) type = 'h2';
+        else if (avgFs >= h3T && isBold) type = 'h3';
+      }
+      if (type === 'body' && opts.bullets) {
+        var bm = text.match(/^([\u2022\u00b7\u25aa\u25b8\-\u2013\u2014]\s*)(.+)/);
+        var nm = text.match(/^(\d+[.)]\s+)(.+)/);
+        if (bm) { tokens.push({ type: 'bullet', text: '- ' + bm[2].trim() }); i++; continue; }
+        if (nm) { tokens.push({ type: 'bullet', text: nm[0].trim() }); i++; continue; }
+      }
+      tokens.push({ type: type, text: text });
+      i++;
+    }
+  });
+
+  // ── Second pass: merge consecutive heading fragments ─────────────────────
+  var merged = [];
+  tokens.forEach(function(tok) {
+    if (tok.type === 'pagemarker' || tok.type === 'table') { merged.push(tok); return; }
+    var prev = null;
+    for (var k = merged.length - 1; k >= 0; k--) {
+      if (merged[k].type !== 'pagemarker') { prev = merged[k]; break; }
+    }
+    var isH = tok.type === 'h1' || tok.type === 'h2' || tok.type === 'h3';
+    var prevIsH = prev && (prev.type === 'h1' || prev.type === 'h2' || prev.type === 'h3');
+    if (opts.mergeHeadings && isH && prevIsH) {
+      prev.text = prev.text + ' ' + tok.text;
+    } else {
+      merged.push({ type: tok.type, text: tok.text });
+    }
+  });
+
+  // ── Render to plain text ─────────────────────────────────────────────────
+  setProgress(92, 'Rendering output...');
+  var lines2 = [];
+  merged.forEach(function(tok) {
+    if (tok.type === 'pagemarker') {
+      lines2.push(''); lines2.push(tok.text); lines2.push('');
+    } else if (tok.type === 'h1') {
+      lines2.push(''); lines2.push('# ' + tok.text); lines2.push('');
+    } else if (tok.type === 'h2') {
+      lines2.push(''); lines2.push('## ' + tok.text); lines2.push('');
+    } else if (tok.type === 'h3') {
+      lines2.push(''); lines2.push('### ' + tok.text); lines2.push('');
+    } else if (tok.type === 'table') {
+      lines2.push('');
+      // Render as Markdown table
+      var rows = tok.rows;
+      var colCount = rows[0].length;
+      lines2.push('| ' + rows[0].join(' | ') + ' |');
+      lines2.push('| ' + new Array(colCount).fill('---').join(' | ') + ' |');
+      for (var r = 1; r < rows.length; r++) {
+        lines2.push('| ' + rows[r].join(' | ') + ' |');
+      }
+      lines2.push('');
+    } else {
+      lines2.push(tok.text);
+    }
+  });
+
+  setProgress(97, 'Cleaning up...');
+  return lines2.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+
+async function extractOCRMode(pdf, pageNums, totalPages) {
+  var opts = getOpts();
+  var allText = [];
+
+  // Tesseract worker: runs locally in your browser, nothing leaves your device
+  var worker = await Tesseract.createWorker('eng', 1, { logger: function(){} });
+
+  for (var idx = 0; idx < pageNums.length; idx++) {
+    var pn = pageNums[idx];
+    setProgress(5 + (idx / pageNums.length) * 88, 'OCR: page ' + pn + ' of ' + totalPages + ' (this takes a moment)...');
+
+    var page = await pdf.getPage(pn);
+    var vp = page.getViewport({ scale: 2.0 });
+    var canvas = document.createElement('canvas');
+    canvas.width = vp.width; canvas.height = vp.height;
+    await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+
+    var result = await worker.recognize(canvas);
+    var lines = (result.data.lines || []);
+
+    if (opts.pagenums && pageNums.length > 1) { allText.push('--- Page ' + pn + ' ---'); allText.push(''); }
+
+    lines.forEach(function(line) {
+      var text = line.text.replace(/\n/g, ' ').trim();
+      if (!text) return;
+      if (opts.bullets) {
+        var bm = text.match(/^([\u2022\u00b7\u25aa\u25b8\-\u2013\u2014o]\s+)(.+)/);
+        var nm = text.match(/^(\d+[.)]\s+)(.+)/);
+        if (bm) { allText.push('- ' + bm[2].trim()); return; }
+        if (nm) { allText.push(nm[0].trim()); return; }
+      }
+      if (opts.headings && line.confidence > 70) {
+        var w = text.split(' ').length;
+        var isAllCaps = text === text.toUpperCase() && text.length > 3 && /[A-Z]/.test(text);
+        if (isAllCaps && w <= 6) { allText.push(''); allText.push('# ' + text); allText.push(''); return; }
+        if (w <= 5 && !/[.!?,;:]$/.test(text) && line.confidence > 85) { allText.push(''); allText.push('## ' + text); allText.push(''); return; }
+      }
+      allText.push(text);
+    });
+    allText.push('');
+  }
+
+  await worker.terminate();
+  setProgress(97, 'Cleaning up...');
+  return allText.join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+function groupByLine(items) {
+  if (!items.length) return [];
+  var sorted = items.slice().sort(function(a,b){ return a.y-b.y || a.x-b.x; });
+  var groups = [[sorted[0]]];
+  for (var i = 1; i < sorted.length; i++) {
+    var last = groups[groups.length-1];
+    var lastItem = last[last.length-1];
+    // Tolerance scales with font size; large text needs more room
+    var tol = Math.max(4, lastItem.fs * 0.4);
+    if (Math.abs(sorted[i].y - lastItem.y) <= tol) last.push(sorted[i]);
+    else groups.push([sorted[i]]);
+  }
+  return groups.map(function(g){ return g.sort(function(a,b){ return a.x-b.x; }); });
+}
+
+var ipWarningAcknowledged = false;
+
+function copyText() {
+  if (!outputText) return;
+  if (!ipWarningAcknowledged) {
+    document.getElementById('ipModal').classList.add('visible');
+    setTimeout(function() { document.querySelector('.modal-confirm').focus(); }, 100);
+    return;
+  }
+  performCopy();
+}
+
+function dismissModal(confirmed) {
+  document.getElementById('ipModal').classList.remove('visible');
+  if (confirmed) {
+    ipWarningAcknowledged = true;
+    performCopy();
+  }
+}
+
+function performCopy() {
+  // Call setCopied immediately - don't wait for async so there is no double-call
+  setCopied();
+  // Then attempt clipboard write - if it fails we already showed feedback
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(outputText).catch(function() {
+        // Silent fallback - feedback already shown
+        try {
+          var ta = document.createElement('textarea');
+          ta.value = outputText;
+          ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+          document.body.appendChild(ta);
+          ta.focus();
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+        } catch(e) {}
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = outputText;
+      ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+  } catch(e) {}
+}
+
+var copyInProgress = false;
+
+function setCopied() {
+  if (copyInProgress) return;
+  copyInProgress = true;
+  var btn = document.getElementById('copyBigBtn');
+  btn.classList.add('copied');
+  document.getElementById('copyIcon').textContent = '\u2713';
+  document.getElementById('copyLabel').textContent = 'Copied!';
+  setTimeout(function() {
+    btn.classList.remove('copied');
+    document.getElementById('copyIcon').textContent = '\uD83D\uDCCB';
+    document.getElementById('copyLabel').textContent = 'Copy to clipboard';
+    copyInProgress = false;
+  }, 2500);
+}
+
+// Close modal on overlay click
+document.getElementById('ipModal').addEventListener('click', function(e) {
+  if (e.target === this) dismissModal(false);
+});
+
+// Close on Escape key + focus trap
+document.addEventListener('keydown', function(e) {
+  var modal = document.getElementById('ipModal');
+  if (!modal.classList.contains('visible')) return;
+  if (e.key === 'Escape') { dismissModal(false); return; }
+  if (e.key === 'Tab') {
+    var focusable = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    var first = focusable[0];
+    var last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+    } else {
+      if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+  }
+});
+
+
+function downloadTxt() {
+  if (!outputText) return;
+  var blob = new Blob([outputText], { type: 'text/plain' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = (currentFile ? currentFile.name.replace(/\.(pdf|docx|pptx|xlsx)$/i, '') : 'document') + '_plain.txt';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Register service worker for PWA install support
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('service-worker.js').catch(function(err) {
+      // Silent fail - app works fine without SW (e.g. when opened as local file)
+      console.info('Pre-Chewed: service worker not registered', err.message);
+    });
+  });
+}
+</script>
+</body>
+</html>
