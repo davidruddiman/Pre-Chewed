@@ -2,7 +2,7 @@
 
 > Chew documents. Spit out clean text. Copy. Paste. Ask AI.
 
-**[Try it now](https://yourusername.github.io/pre-chewed)** - runs entirely in your browser, nothing uploaded, no account required.
+**[Try it now](https://davidruddiman.github.io/Pre-Chewed)** - runs entirely in your browser, nothing uploaded, no account required.
 
 ---
 
