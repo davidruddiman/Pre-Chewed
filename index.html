@@ -1219,8 +1219,8 @@ async function convertPDF() {
     // For text-based PDFs: extract raw text and divide by 4 (standard token estimate).
     var rawText = '';
     try {
-      for (var p = 1; p <= totalPages; p++) {
-        var pg = await pdf.getPage(p);
+      for (var pIdx = 0; pIdx < pageNums.length; pIdx++) {
+        var pg = await pdf.getPage(pageNums[pIdx]);
         var ct = await pg.getTextContent();
         rawText += ct.items.map(function(i){ return i.str; }).join(' ');
       }
