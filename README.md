@@ -97,6 +97,8 @@ Once you paste the output into Claude, ChatGPT, Gemini, Microsoft Copilot, Perpl
 
 Pre-Chewed removes images and layout data, but the underlying text remains subject to its original copyright. If your document contains proprietary or third-party content, it is your responsibility to ensure you have the right to share it with whichever AI tool you use.
 
+Pre-Chewed uses Cloudflare Web Analytics to track anonymous page visit counts and load performance. No cookies, no personal data, no IP storage, no cross-site tracking. This is used only to understand how many people are using the app and has no connection to your documents or their content, which never leave your browser.
+
 ---
 
 ## How it works
